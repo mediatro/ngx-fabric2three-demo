@@ -1,0 +1,22 @@
+<div fxLayout="column">
+  <button (click)="onClick()">Update</button>
+
+  <ngt-canvas [size]="{height: 300, width: 300}">
+    <ngt-mesh
+      #mesh="ngtMesh"
+      (animateReady)="onAnimate(mesh.mesh)"
+      (click)="active = !active"
+      (pointerover)="hover = true"
+      (pointerout)="hover = false"
+      [scale]="active ? [1.5, 1.5, 1.5] : [1, 1, 1]"
+      [position]="position"
+    >
+      <ngt-box-geometry></ngt-box-geometry>
+
+      <ngt-mesh-basic-material *ngIf="texture"
+        [parameters]="{map: texture}">
+      </ngt-mesh-basic-material>
+
+    </ngt-mesh>
+  </ngt-canvas>
+</div>
