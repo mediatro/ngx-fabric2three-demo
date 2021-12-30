@@ -33,9 +33,25 @@ export class FabricToThreeBridgeService {
 
   addToCanvas(el: fabric.Object, id?: string) {
     if(id){
+      (el as any).id = id;
       this.registeredElements[id] = el;
     }
     this.canvas?.add(el);
+  }
+
+  importCanvasFromJson(json: any) {
+    //this.canvas?.clear();
+    this.canvas?.loadFromJSON(
+      json,
+      this.canvas.renderAll.bind(this.canvas),
+      (jo: any, fo: fabric.Object) => {
+        this.addToCanvas(fo, jo.id);
+      }
+    );
+  }
+
+  exportCanvasToJson() {
+    return this.canvas?.toJSON(['id']);
   }
 
 

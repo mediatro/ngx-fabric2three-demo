@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {fabric} from "fabric";
 import {FabricToThreeBridgeService} from "../../services/fabric-to-three-bridge.service";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-fabric',
@@ -8,6 +9,8 @@ import {FabricToThreeBridgeService} from "../../services/fabric-to-three-bridge.
   styleUrls: ['./fabric.component.css']
 })
 export class FabricComponent implements OnInit {
+
+  importJsonControl = new FormControl();
 
   private _canvas?: fabric.Canvas;
   get canvas(): fabric.Canvas | undefined {
@@ -53,4 +56,11 @@ export class FabricComponent implements OnInit {
     this.canvas.remove(this.f2t.registeredElements['circle']);
   }
 
+  importJson() {
+   this.f2t.importCanvasFromJson(this.importJsonControl.value);
+  }
+
+  exportJson() {
+    console.log(this.f2t.exportCanvasToJson());
+  }
 }

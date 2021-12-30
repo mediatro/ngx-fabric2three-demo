@@ -12,6 +12,7 @@ import {NgtMeshBasicMaterialModule} from "@angular-three/core/materials";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {NgtCanvasTextureModule} from "@angular-three/core/textures";
 import {FabricToThreeBridgeService} from "./services/fabric-to-three-bridge.service";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import {FabricToThreeBridgeService} from "./services/fabric-to-three-bridge.serv
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     FlexLayoutModule,
     NgtCoreModule,
     NgtMeshModule,
