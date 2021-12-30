@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import {fabric} from "fabric";
 import {ReplaySubject, Subject} from "rxjs";
 
+export type PatchedFabricObject = fabric.Object & {
+  id?: string,
+  name?: string,
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FabricToThreeBridgeService {
 
-  registeredElements: {[key: string]: fabric.Object} = {};
+  registeredElements: {[key: string]: PatchedFabricObject} = {};
 
-  canvasChanged$: Subject<fabric.Object[]> = new Subject();
+  canvasChanged$: Subject<PatchedFabricObject[]> = new Subject();
 
   private _canvas?: fabric.Canvas;
   get canvas(): fabric.Canvas | undefined {
@@ -20,7 +25,13 @@ export class FabricToThreeBridgeService {
 
     if(value){
       const cb = () => this.canvasChanged$.next(value.getObjects());
-      value.on('object:added', cb);
+
+      value.on('object:added', e => {
+        if(e.target){
+          this.generateIdForObject(e.target);
+        }
+        cb();
+      });
       value.on('object:removed', cb);
 
       this.canvasSet$.next(value);
@@ -31,27 +42,46 @@ export class FabricToThreeBridgeService {
 
   constructor() { }
 
-  addToCanvas(el: fabric.Object, id?: string) {
-    if(id){
-      (el as any).id = id;
-      this.registeredElements[id] = el;
+  getObjectById(id: string): PatchedFabricObject | undefined {
+    return this.registeredElements[id];
+  }
+
+  registerObject(obj: PatchedFabricObject){
+    if(obj.id){
+      this.registeredElements[obj.id] = obj;
     }
-    this.canvas?.add(el);
   }
 
   importCanvasFromJson(json: any) {
-    //this.canvas?.clear();
     this.canvas?.loadFromJSON(
       json,
       this.canvas.renderAll.bind(this.canvas),
-      (jo: any, fo: fabric.Object) => {
-        this.addToCanvas(fo, jo.id);
+      (jo: any, fo: PatchedFabricObject) => {
+
       }
     );
   }
 
   exportCanvasToJson() {
-    return this.canvas?.toJSON(['id']);
+    return this.canvas?.toJSON(['id', 'name']);
+  }
+
+  setObjectName(obj: PatchedFabricObject, name: string){
+    obj.name = name;
+  }
+
+  generateIdForObject(obj: PatchedFabricObject){
+    if(obj.id){
+      return;
+    }
+    let id: string;
+    let i = 0;
+    do{
+      id = [obj.type, obj.name, i].join('-')
+      i++;
+    }while(this.getObjectById(id));
+    obj.id = id;
+    this.registerObject(obj);
   }
 
 

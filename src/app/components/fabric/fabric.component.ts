@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {fabric} from "fabric";
-import {FabricToThreeBridgeService} from "../../services/fabric-to-three-bridge.service";
+import {FabricToThreeBridgeService, PatchedFabricObject} from "../../services/fabric-to-three-bridge.service";
 import {FormControl} from "@angular/forms";
 
 @Component({
@@ -44,16 +44,20 @@ export class FabricComponent implements OnInit {
       width: 20, height: 30, fill: 'blue', left: 50, top: 50
     });
 
-    this.f2t.addToCanvas(circle, 'circle');
-    this.f2t.addToCanvas(triangle, 'triangle');
-
     let circle2 = new fabric.Circle({
       radius: 20, fill: 'red', left: 100, top: 100
     });
 
-    this.canvas.add(circle2);
+    this.f2t.setObjectName(circle, 'green');
+    this.f2t.setObjectName(triangle, 'blue');
 
-    this.canvas.remove(this.f2t.registeredElements['circle']);
+    this.canvas.add(circle, triangle, circle2);
+
+    let c = this.f2t.getObjectById((circle as any).id);
+
+    if(c){
+      this.canvas.remove(c);
+    }
   }
 
   importJson() {
