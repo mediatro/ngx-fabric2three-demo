@@ -9,13 +9,20 @@ export class FabricToThreeBridgeService {
 
   registeredElements: {[key: string]: fabric.Object} = {};
 
+  canvasChanged$: Subject<fabric.Object[]> = new Subject();
+
   private _canvas?: fabric.Canvas;
   get canvas(): fabric.Canvas | undefined {
     return this._canvas;
   }
   set canvas(value: fabric.Canvas | undefined) {
     this._canvas = value;
+
     if(value){
+      const cb = () => this.canvasChanged$.next(value.getObjects());
+      value.on('object:added', cb);
+      value.on('object:removed', cb);
+
       this.canvasSet$.next(value);
     }
   }

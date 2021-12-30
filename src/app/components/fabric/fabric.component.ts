@@ -24,6 +24,10 @@ export class FabricComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.f2t.canvasChanged$.subscribe(els => {
+      console.log('Elements changed', els);
+    });
+
     this.canvas = new fabric.Canvas('fabricSurface', {
       backgroundColor: '#ebebff',
       preserveObjectStacking: true,
@@ -39,6 +43,14 @@ export class FabricComponent implements OnInit {
 
     this.f2t.addToCanvas(circle, 'circle');
     this.f2t.addToCanvas(triangle, 'triangle');
+
+    let circle2 = new fabric.Circle({
+      radius: 20, fill: 'red', left: 100, top: 100
+    });
+
+    this.canvas.add(circle2);
+
+    this.canvas.remove(this.f2t.registeredElements['circle']);
   }
 
 }
